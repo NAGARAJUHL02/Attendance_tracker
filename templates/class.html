@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block title %}{{ klass.name }} — Attendance{% endblock %}
+{% block content %}
+  <h2>{{ klass.name }}</h2>
+
+  <section style="margin-top:12px">
+    <form action="/class/{{ klass.id }}/add_student" method="post">
+      <label>Add student: <input name="student_name" required></label>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+
+  <section style="margin-top:18px">
+    <form action="/class/{{ klass.id }}/mark" method="post">
+      <table>
+        <thead>
+          <tr><th>Present</th><th>Student</th><th>Today</th></tr>
+        </thead>
+        <tbody>
+          {% for s in klass.students %}
+          <tr>
+            <td style="width:90px;text-align:center"><input type="checkbox" name="present" value="{{ s.id }}" {% if attendance.get(s.id) and attendance.get(s.id).status == 'present' %}checked{% endif %}></td>
+            <td>{{ s.name }}</td>
+            <td class="muted">{% if attendance.get(s.id) %}{{ attendance.get(s.id).status }}{% else %}-{% endif %}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="muted">No students yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div style="margin-top:12px">
+        <button type="submit">Save today's attendance ({{ today.isoformat() }})</button>
+        <a href="/export/class/{{ klass.id }}/csv" style="margin-left:12px">Export CSV</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
